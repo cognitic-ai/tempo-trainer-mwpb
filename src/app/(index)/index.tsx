@@ -298,46 +298,49 @@ export default function IndexRoute() {
             gap: 8,
             justifyContent: "center"
           }}>
-            {Array.from({ length: totalSubdivisions }, (_, i) => {
-              const isPlayedBeat = getSubdivisionPattern(subdivision, i, totalSubdivisions);
+            {Array.from({ length: beatsPerMeasure }, (_, i) => {
+              const subdivisionsPerBeat = subdivisionMultiplier / timeSignature.bottom;
+              const isActive = Math.floor(currentBeat / subdivisionsPerBeat) === i && currentBeat >= 0;
+              const beatStartIndex = i * subdivisionsPerBeat;
+
+              // Check if any subdivision in this beat is accented
+              const isAccented = Array.from({ length: subdivisionsPerBeat }, (_, j) =>
+                accents.has(beatStartIndex + j)
+              ).some(Boolean);
 
               return (
                 <Pressable
                   key={i}
-                  onPress={() => toggleAccent(i)}
-                  disabled={!isPlayedBeat}
+                  onPress={() => {
+                    // Toggle accent on the first subdivision of this beat
+                    toggleAccent(beatStartIndex);
+                  }}
                   style={({ pressed }) => {
-                    const isActive = currentBeat === i;
-                    const isAccented = accents.has(i);
-
                     return {
                       width: 44,
                       height: 44,
                       borderRadius: 22,
                       backgroundColor:
-                        !isPlayedBeat
-                          ? AC.systemGray6 as any
-                          : isActive && isAccented
-                            ? AC.systemRed as any
-                            : isActive
-                              ? AC.systemBlue as any
-                              : isAccented
-                                ? AC.systemOrange as any
-                                : pressed
-                                  ? AC.systemGray5 as any
-                                  : AC.systemGray6 as any,
+                        isActive && isAccented
+                          ? AC.systemRed as any
+                          : isActive
+                            ? AC.systemBlue as any
+                            : isAccented
+                              ? AC.systemOrange as any
+                              : pressed
+                                ? AC.systemGray5 as any
+                                : AC.systemGray6 as any,
                       justifyContent: "center",
                       alignItems: "center",
-                      borderWidth: isAccented && isPlayedBeat ? 3 : 0,
+                      borderWidth: isAccented ? 3 : 0,
                       borderColor: AC.systemOrange as any,
-                      opacity: isPlayedBeat ? 1 : 0.3,
                     };
                   }}
                 >
                   <Text style={{
                     fontSize: 14,
                     fontWeight: "700",
-                    color: currentBeat === i ? "white" : textColor
+                    color: isActive ? "white" : textColor
                   }}>
                     {i + 1}
                   </Text>
