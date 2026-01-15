@@ -1,6 +1,7 @@
 import { View, Text, Pressable, ScrollView, Platform, Modal, TextInput } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { useAudioPlayer } from "expo-audio";
+import { Image } from "expo-image";
 import * as AC from "@bacons/apple-colors";
 import Slider from "@react-native-community/slider";
 
@@ -428,24 +429,26 @@ export default function IndexRoute() {
             }}>
               Subdivision
             </Text>
-            <Text style={{
-              fontSize: 24,
-              fontWeight: "400",
-              color: textColor
-            }}>
-              {(() => {
-                const notationMap: Record<Subdivision, string> = {
-                  whole: "○",
-                  half: "𝅗𝅥",
-                  quarter: "♩",
-                  eighth: "♪",
-                  sixteenth: "♬",
-                  "eighth-sixteenth-sixteenth": "♪♬",
-                  "sixteenth-sixteenth-eighth": "♬♪"
+            <Image
+              source={(() => {
+                const imageMap: Record<Subdivision, any> = {
+                  whole: require('../../assets/notes/whole.svg'),
+                  half: require('../../assets/notes/half.svg'),
+                  quarter: require('../../assets/notes/quarter.svg'),
+                  eighth: require('../../assets/notes/eighth.svg'),
+                  sixteenth: require('../../assets/notes/sixteenth.svg'),
+                  "eighth-sixteenth-sixteenth": require('../../assets/notes/eighth-sixteenth-sixteenth.svg'),
+                  "sixteenth-sixteenth-eighth": require('../../assets/notes/sixteenth-sixteenth-eighth.svg')
                 };
-                return notationMap[subdivision];
+                return imageMap[subdivision];
               })()}
-            </Text>
+              style={{
+                width: subdivision.includes('-') ? 40 : 30,
+                height: 30,
+                tintColor: textColor
+              }}
+              contentFit="contain"
+            />
           </Pressable>
         </View>
 
@@ -612,14 +615,14 @@ export default function IndexRoute() {
                 justifyContent: "center",
               }}>
                 {SUBDIVISIONS.map((sub) => {
-                  const notationMap: Record<Subdivision, string> = {
-                    whole: "○",
-                    half: "𝅗𝅥",
-                    quarter: "♩",
-                    eighth: "♪",
-                    sixteenth: "♬",
-                    "eighth-sixteenth-sixteenth": "♪♬",
-                    "sixteenth-sixteenth-eighth": "♬♪"
+                  const imageMap: Record<Subdivision, any> = {
+                    whole: require('../../assets/notes/whole.svg'),
+                    half: require('../../assets/notes/half.svg'),
+                    quarter: require('../../assets/notes/quarter.svg'),
+                    eighth: require('../../assets/notes/eighth.svg'),
+                    sixteenth: require('../../assets/notes/sixteenth.svg'),
+                    "eighth-sixteenth-sixteenth": require('../../assets/notes/eighth-sixteenth-sixteenth.svg'),
+                    "sixteenth-sixteenth-eighth": require('../../assets/notes/sixteenth-sixteenth-eighth.svg')
                   };
 
                   return (
@@ -639,18 +642,23 @@ export default function IndexRoute() {
                               ? AC.systemGray5 as any
                               : AC.systemGray6 as any,
                         paddingHorizontal: 24,
-                        paddingVertical: 16,
+                        paddingVertical: 20,
                         borderRadius: 10,
                         borderCurve: "continuous",
+                        minHeight: 60,
+                        justifyContent: "center",
+                        alignItems: "center",
                       })}
                     >
-                      <Text style={{
-                        fontSize: 28,
-                        fontWeight: "400",
-                        color: sub === subdivision ? "white" : textColor
-                      }}>
-                        {notationMap[sub]}
-                      </Text>
+                      <Image
+                        source={imageMap[sub]}
+                        style={{
+                          width: sub.includes('-') ? 50 : 35,
+                          height: 35,
+                          tintColor: sub === subdivision ? "white" : textColor
+                        }}
+                        contentFit="contain"
+                      />
                     </Pressable>
                   );
                 })}
