@@ -1,6 +1,6 @@
 import { View, Text, Pressable, ScrollView, Platform } from "react-native";
 import { useState, useEffect, useRef } from "react";
-import { Audio } from "expo-audio";
+import { useAudioPlayer, AudioSource } from "expo-audio";
 import * as AC from "@bacons/apple-colors";
 import Slider from "@react-native-community/slider";
 
@@ -109,16 +109,8 @@ export default function IndexRoute() {
 
   const loadSounds = async () => {
     try {
-      if (Platform.OS === 'web') {
-        // @ts-ignore - Web Audio API
-        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-      } else {
-        await Audio.setAudioModeAsync({
-          playsInSilentModeIOS: true,
-          shouldDuckAndroid: false,
-          staysActiveInBackground: false,
-        });
-      }
+      // @ts-ignore - Web Audio API
+      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
     } catch (error) {
       console.error("Error setting audio mode:", error);
     }
@@ -130,54 +122,35 @@ export default function IndexRoute() {
     }
   };
 
-  const playWebSound = (frequency: number) => {
-    if (!audioContextRef.current) {
-      console.log('No audio context available');
-      return;
-    }
-
-    const ctx = audioContextRef.current;
-
-    // Resume context if suspended (required by some browsers)
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
-
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    oscillator.frequency.value = frequency;
-    oscillator.type = 'sine';
-
-    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.05);
-  };
-
   const playSound = async (isAccent: boolean) => {
     try {
-      if (Platform.OS === 'web') {
-        playWebSound(isAccent ? 1200 : 800);
-      } else {
-        const clickSound = require('../../assets/click.wav');
-        const accentSound = require('../../assets/accent-click.wav');
-
-        const { sound } = await Audio.Sound.createAsync(
-          isAccent ? accentSound : clickSound,
-          { shouldPlay: true }
-        );
-
-        sound.setOnPlaybackStatusUpdate((status) => {
-          if (status.isLoaded && status.didJustFinish) {
-            sound.unloadAsync();
-          }
-        });
+      if (!audioContextRef.current) {
+        console.log('No audio context available');
+        return;
       }
+
+      const ctx = audioContextRef.current;
+
+      // Resume context if suspended (required by some browsers)
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      const frequency = isAccent ? 1200 : 800;
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      oscillator.frequency.value = frequency;
+      oscillator.type = 'sine';
+
+      gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.05);
     } catch (error) {
       console.error("Error playing sound:", error);
     }
@@ -188,8 +161,8 @@ export default function IndexRoute() {
       setCurrentBeat(-1);
       setIsPlaying(false);
     } else {
-      // Initialize audio context on first user interaction (web)
-      if (Platform.OS === 'web' && !audioContextRef.current) {
+      // Initialize audio context on first user interaction
+      if (!audioContextRef.current) {
         // @ts-ignore - Web Audio API
         audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       }
