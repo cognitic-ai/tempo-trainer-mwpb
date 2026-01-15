@@ -246,7 +246,8 @@ export default function IndexRoute() {
           <Text style={{
             fontSize: 18,
             fontWeight: "600",
-            color: textColor
+            color: textColor,
+            textAlign: "center"
           }}>
             Beats (Tap to Accent)
           </Text>
