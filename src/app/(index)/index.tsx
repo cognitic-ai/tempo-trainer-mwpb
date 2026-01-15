@@ -53,6 +53,29 @@ export default function IndexRoute() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isPlaying) {
+      // Restart interval with new timing when BPM changes
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+      intervalRef.current = setInterval(() => {
+        setCurrentBeat((prevBeat) => {
+          const nextBeat = (prevBeat + 1) % totalSubdivisions;
+          playSound(accents.has(nextBeat));
+          return nextBeat;
+        });
+      }, intervalMs);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [intervalMs, isPlaying, totalSubdivisions, accents]);
+
   const loadSounds = async () => {
     try {
       if (Platform.OS === 'web') {
@@ -131,10 +154,6 @@ export default function IndexRoute() {
 
   const togglePlay = () => {
     if (isPlaying) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
       setCurrentBeat(-1);
       setIsPlaying(false);
     } else {
@@ -146,14 +165,6 @@ export default function IndexRoute() {
 
       setCurrentBeat(0);
       playSound(accents.has(0));
-
-      let beat = 0;
-      intervalRef.current = setInterval(() => {
-        beat = (beat + 1) % totalSubdivisions;
-        setCurrentBeat(beat);
-        playSound(accents.has(beat));
-      }, intervalMs);
-
       setIsPlaying(true);
     }
   };
