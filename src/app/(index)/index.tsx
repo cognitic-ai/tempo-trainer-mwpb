@@ -69,9 +69,9 @@ export default function IndexRoute() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // Audio players for native platforms
-  const clickPlayer = Platform.OS !== 'web' ? useAudioPlayer(require('../../assets/click.wav')) : null;
-  const accentPlayer = Platform.OS !== 'web' ? useAudioPlayer(require('../../assets/accent-click.wav')) : null;
+  // Audio players for native platforms - hooks must be called unconditionally
+  const clickPlayer = useAudioPlayer(require('../../assets/click.wav'));
+  const accentPlayer = useAudioPlayer(require('../../assets/accent-click.wav'));
 
   const beatsPerMeasure = timeSignature.top;
   const subdivisionMultiplier = getSubdivisionMultiplier(subdivision);
