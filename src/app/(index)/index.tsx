@@ -462,8 +462,8 @@ export default function IndexRoute() {
                 quarter: "1/4",
                 eighth: "1/8",
                 sixteenth: "1/16",
-                "eighth-sixteenth-sixteenth": "♪𝅘𝅥𝅯𝅘𝅥𝅯",
-                "sixteenth-sixteenth-eighth": "𝅘𝅥𝅯𝅘𝅥𝅯♪"
+                "eighth-sixteenth-sixteenth": "1/8 - 1/16 - 1/16",
+                "sixteenth-sixteenth-eighth": "1/16 - 1/16 - 1/8"
               };
 
               return (
