@@ -304,14 +304,28 @@ export default function IndexRoute() {
               </Pressable>
             ))}
           </View>
-          <Text style={{
-            fontSize: 14,
-            color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
-            textAlign: "center",
+          <View style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
             marginTop: 8
           }}>
-            Orange border = Accented beat
-          </Text>
+            <View style={{
+              width: 20,
+              height: 20,
+              borderRadius: 10,
+              backgroundColor: AC.systemOrange as any,
+              borderWidth: 3,
+              borderColor: AC.systemOrange as any,
+            }} />
+            <Text style={{
+              fontSize: 14,
+              color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
+            }}>
+              = Accented beat
+            </Text>
+          </View>
         </View>
 
         {/* Play/Pause Button */}
