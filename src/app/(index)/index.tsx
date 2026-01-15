@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, useWindowDimensions } from "react-native";
+import { View, Text, Pressable, ScrollView, Platform } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { Audio } from "expo-audio";
 import * as AC from "@bacons/apple-colors";
@@ -37,11 +37,8 @@ export default function IndexRoute() {
   const [currentBeat, setCurrentBeat] = useState(-1);
   const [accents, setAccents] = useState<Set<number>>(new Set([0]));
 
-  const soundRef = useRef<Audio.Sound | null>(null);
-  const accentSoundRef = useRef<Audio.Sound | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const { width } = useWindowDimensions();
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const beatsPerMeasure = timeSignature.top;
   const subdivisionMultiplier = getSubdivisionMultiplier(subdivision);
@@ -57,97 +54,74 @@ export default function IndexRoute() {
 
   const loadSounds = async () => {
     try {
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-      });
-
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: createClickSound(800) },
-        { shouldPlay: false }
-      );
-      soundRef.current = sound;
-
-      const { sound: accentSound } = await Audio.Sound.createAsync(
-        { uri: createClickSound(1200) },
-        { shouldPlay: false }
-      );
-      accentSoundRef.current = accentSound;
+      if (Platform.OS === 'web') {
+        // @ts-ignore - Web Audio API
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      } else {
+        await Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          shouldDuckAndroid: false,
+          staysActiveInBackground: false,
+        });
+      }
     } catch (error) {
-      console.error("Error loading sounds:", error);
+      console.error("Error setting audio mode:", error);
     }
   };
 
   const unloadSounds = async () => {
-    if (soundRef.current) {
-      await soundRef.current.unloadAsync();
-    }
-    if (accentSoundRef.current) {
-      await accentSoundRef.current.unloadAsync();
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
     }
   };
 
-  const createClickSound = (frequency: number) => {
-    const sampleRate = 44100;
-    const duration = 0.05;
-    const numSamples = Math.floor(sampleRate * duration);
-    const samples = new Float32Array(numSamples);
-
-    for (let i = 0; i < numSamples; i++) {
-      const t = i / sampleRate;
-      const envelope = Math.exp(-10 * t);
-      samples[i] = Math.sin(2 * Math.PI * frequency * t) * envelope;
+  const playWebSound = (frequency: number) => {
+    if (!audioContextRef.current) {
+      console.log('No audio context available');
+      return;
     }
 
-    const maxVal = Math.max(...samples.map(Math.abs));
-    for (let i = 0; i < samples.length; i++) {
-      samples[i] /= maxVal;
+    const ctx = audioContextRef.current;
+
+    // Resume context if suspended (required by some browsers)
+    if (ctx.state === 'suspended') {
+      ctx.resume();
     }
 
-    const wavData = createWavBlob(samples, sampleRate);
-    return wavData;
-  };
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
 
-  const createWavBlob = (samples: Float32Array, sampleRate: number) => {
-    const buffer = new ArrayBuffer(44 + samples.length * 2);
-    const view = new DataView(buffer);
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
 
-    const writeString = (offset: number, string: string) => {
-      for (let i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
-      }
-    };
+    oscillator.frequency.value = frequency;
+    oscillator.type = 'sine';
 
-    writeString(0, 'RIFF');
-    view.setUint32(4, 36 + samples.length * 2, true);
-    writeString(8, 'WAVE');
-    writeString(12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, 1, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * 2, true);
-    view.setUint16(32, 2, true);
-    view.setUint16(34, 16, true);
-    writeString(36, 'data');
-    view.setUint32(40, samples.length * 2, true);
+    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
 
-    let offset = 44;
-    for (let i = 0; i < samples.length; i++) {
-      const s = Math.max(-1, Math.min(1, samples[i]));
-      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-      offset += 2;
-    }
-
-    const blob = new Blob([buffer], { type: 'audio/wav' });
-    return URL.createObjectURL(blob);
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.05);
   };
 
   const playSound = async (isAccent: boolean) => {
     try {
-      const sound = isAccent ? accentSoundRef.current : soundRef.current;
-      if (sound) {
-        await sound.setPositionAsync(0);
-        await sound.playAsync();
+      if (Platform.OS === 'web') {
+        playWebSound(isAccent ? 1200 : 800);
+      } else {
+        const clickSound = require('../../assets/click.wav');
+        const accentSound = require('../../assets/accent-click.wav');
+
+        const { sound } = await Audio.Sound.createAsync(
+          isAccent ? accentSound : clickSound,
+          { shouldPlay: true }
+        );
+
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if (status.isLoaded && status.didJustFinish) {
+            sound.unloadAsync();
+          }
+        });
       }
     } catch (error) {
       console.error("Error playing sound:", error);
@@ -163,6 +137,12 @@ export default function IndexRoute() {
       setCurrentBeat(-1);
       setIsPlaying(false);
     } else {
+      // Initialize audio context on first user interaction (web)
+      if (Platform.OS === 'web' && !audioContextRef.current) {
+        // @ts-ignore - Web Audio API
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
       setCurrentBeat(0);
       playSound(accents.has(0));
 
