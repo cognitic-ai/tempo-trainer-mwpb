@@ -273,9 +273,9 @@ export default function IndexRoute() {
                   }}
                   style={({ pressed }) => {
                     return {
-                      width: 44,
-                      height: 44,
-                      borderRadius: 22,
+                      width: 64,
+                      height: 64,
+                      borderRadius: 32,
                       backgroundColor:
                         isActive && isAccented
                           ? AC.systemRed as any
@@ -288,13 +288,13 @@ export default function IndexRoute() {
                                 : AC.systemGray6 as any,
                       justifyContent: "center",
                       alignItems: "center",
-                      borderWidth: isAccented ? 3 : 0,
+                      borderWidth: isAccented ? 4 : 0,
                       borderColor: AC.systemOrange as any,
                     };
                   }}
                 >
                   <Text style={{
-                    fontSize: 14,
+                    fontSize: 20,
                     fontWeight: "700",
                     color: isActive ? "white" : textColor
                   }}>
