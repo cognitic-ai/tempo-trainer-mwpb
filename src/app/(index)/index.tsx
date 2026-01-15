@@ -2,6 +2,7 @@ import { View, Text, Pressable, ScrollView, Platform } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { Audio } from "expo-audio";
 import * as AC from "@bacons/apple-colors";
+import Slider from "@react-native-community/slider";
 
 type TimeSignature = { top: number; bottom: number };
 type Subdivision = "whole" | "half" | "quarter" | "eighth" | "sixteenth";
@@ -167,10 +168,6 @@ export default function IndexRoute() {
     setAccents(newAccents);
   };
 
-  const adjustBpm = (delta: number) => {
-    setBpm(prev => Math.max(20, Math.min(300, prev + delta)));
-  };
-
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -187,7 +184,7 @@ export default function IndexRoute() {
         </Text>
 
         {/* BPM Control */}
-        <View style={{ alignItems: "center", gap: 16, width: "100%" }}>
+        <View style={{ alignItems: "center", gap: 16, width: "100%", paddingHorizontal: 20 }}>
           <Text style={{
             fontSize: 72,
             fontWeight: "700",
@@ -203,58 +200,21 @@ export default function IndexRoute() {
             BPM
           </Text>
 
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <Pressable
-              onPress={() => adjustBpm(-10)}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 12,
-                borderCurve: "continuous",
-              })}
-            >
-              <Text style={{ fontSize: 20, fontWeight: "600", color: AC.label as any }}>-10</Text>
-            </Pressable>
+          <Slider
+            style={{ width: "100%", height: 40 }}
+            minimumValue={20}
+            maximumValue={300}
+            step={1}
+            value={bpm}
+            onValueChange={setBpm}
+            minimumTrackTintColor={AC.systemBlue as any}
+            maximumTrackTintColor={AC.systemGray5 as any}
+            thumbTintColor={AC.systemBlue as any}
+          />
 
-            <Pressable
-              onPress={() => adjustBpm(-1)}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 12,
-                borderCurve: "continuous",
-              })}
-            >
-              <Text style={{ fontSize: 20, fontWeight: "600", color: AC.label as any }}>-1</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => adjustBpm(1)}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 12,
-                borderCurve: "continuous",
-              })}
-            >
-              <Text style={{ fontSize: 20, fontWeight: "600", color: AC.label as any }}>+1</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => adjustBpm(10)}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 12,
-                borderCurve: "continuous",
-              })}
-            >
-              <Text style={{ fontSize: 20, fontWeight: "600", color: AC.label as any }}>+10</Text>
-            </Pressable>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
+            <Text style={{ fontSize: 14, color: AC.secondaryLabel as any }}>20</Text>
+            <Text style={{ fontSize: 14, color: AC.secondaryLabel as any }}>300</Text>
           </View>
         </View>
 
