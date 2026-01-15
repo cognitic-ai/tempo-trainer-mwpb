@@ -37,6 +37,7 @@ export default function IndexRoute() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(-1);
   const [accents, setAccents] = useState<Set<number>>(new Set([0]));
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -179,20 +180,40 @@ export default function IndexRoute() {
     setAccents(newAccents);
   };
 
+  const bgColor = isDarkMode ? "black" : "white";
+  const textColor = isDarkMode ? "white" : "black";
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      style={{ flex: 1, backgroundColor: "black" }}
+      style={{ flex: 1, backgroundColor: bgColor }}
     >
-      <View style={{ padding: 20, gap: 32, alignItems: "center", backgroundColor: "black" }}>
-        <Text style={{
-          fontSize: 32,
-          fontWeight: "700",
-          color: AC.label as any,
-          marginTop: 20
-        }}>
-          Metronome
-        </Text>
+      <View style={{ padding: 20, gap: 32, alignItems: "center", backgroundColor: bgColor }}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginTop: 20 }}>
+          <View style={{ width: 60 }} />
+          <Text style={{
+            fontSize: 32,
+            fontWeight: "700",
+            color: textColor
+          }}>
+            Metronome
+          </Text>
+          <Pressable
+            onPress={() => setIsDarkMode(!isDarkMode)}
+            style={({ pressed }) => ({
+              width: 60,
+              height: 32,
+              borderRadius: 16,
+              backgroundColor: pressed ? AC.systemGray4 as any : AC.systemGray5 as any,
+              justifyContent: "center",
+              alignItems: "center",
+            })}
+          >
+            <Text style={{ fontSize: 18 }}>
+              {isDarkMode ? "☀️" : "🌙"}
+            </Text>
+          </Pressable>
+        </View>
 
         {/* BPM Control */}
         <View style={{ alignItems: "center", gap: 16, width: "100%", paddingHorizontal: 20 }}>
@@ -205,7 +226,7 @@ export default function IndexRoute() {
           </Text>
           <Text style={{
             fontSize: 16,
-            color: AC.secondaryLabel as any,
+            color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
             fontWeight: "600"
           }}>
             BPM
@@ -224,8 +245,8 @@ export default function IndexRoute() {
           />
 
           <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
-            <Text style={{ fontSize: 14, color: AC.secondaryLabel as any }}>20</Text>
-            <Text style={{ fontSize: 14, color: AC.secondaryLabel as any }}>300</Text>
+            <Text style={{ fontSize: 14, color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any }}>20</Text>
+            <Text style={{ fontSize: 14, color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any }}>300</Text>
           </View>
         </View>
 
@@ -234,7 +255,7 @@ export default function IndexRoute() {
           <Text style={{
             fontSize: 18,
             fontWeight: "600",
-            color: AC.label as any
+            color: textColor
           }}>
             Beats (Tap to Accent)
           </Text>
@@ -276,7 +297,7 @@ export default function IndexRoute() {
                 <Text style={{
                   fontSize: 14,
                   fontWeight: "700",
-                  color: currentBeat === i ? "white" : AC.label as any
+                  color: currentBeat === i ? "white" : textColor
                 }}>
                   {i + 1}
                 </Text>
@@ -285,7 +306,7 @@ export default function IndexRoute() {
           </View>
           <Text style={{
             fontSize: 14,
-            color: AC.secondaryLabel as any,
+            color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
             textAlign: "center",
             marginTop: 8
           }}>
@@ -321,7 +342,7 @@ export default function IndexRoute() {
           <Text style={{
             fontSize: 18,
             fontWeight: "600",
-            color: AC.label as any
+            color: textColor
           }}>
             Time Signature
           </Text>
@@ -356,7 +377,7 @@ export default function IndexRoute() {
                   fontWeight: "600",
                   color: sig.top === timeSignature.top && sig.bottom === timeSignature.bottom
                     ? "white"
-                    : AC.label as any
+                    : textColor
                 }}>
                   {sig.top}/{sig.bottom}
                 </Text>
@@ -370,7 +391,7 @@ export default function IndexRoute() {
           <Text style={{
             fontSize: 18,
             fontWeight: "600",
-            color: AC.label as any
+            color: textColor
           }}>
             Subdivision
           </Text>
@@ -412,7 +433,7 @@ export default function IndexRoute() {
                   <Text style={{
                     fontSize: 18,
                     fontWeight: "600",
-                    color: sub === subdivision ? "white" : AC.label as any
+                    color: sub === subdivision ? "white" : textColor
                   }}>
                     {notationMap[sub]}
                   </Text>
