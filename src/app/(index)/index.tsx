@@ -1,5 +1,6 @@
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView, Platform } from "react-native";
 import { useState, useEffect, useRef } from "react";
+import { useAudioPlayer } from "expo-audio";
 import * as AC from "@bacons/apple-colors";
 import Slider from "@react-native-community/slider";
 
@@ -68,6 +69,10 @@ export default function IndexRoute() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
+  // Audio players for native platforms
+  const clickPlayer = Platform.OS !== 'web' ? useAudioPlayer(require('../../assets/click.wav')) : null;
+  const accentPlayer = Platform.OS !== 'web' ? useAudioPlayer(require('../../assets/accent-click.wav')) : null;
+
   const beatsPerMeasure = timeSignature.top;
   const subdivisionMultiplier = getSubdivisionMultiplier(subdivision);
   const totalSubdivisions = beatsPerMeasure * (subdivisionMultiplier / timeSignature.bottom);
@@ -108,8 +113,10 @@ export default function IndexRoute() {
 
   const loadSounds = async () => {
     try {
-      // @ts-ignore - Web Audio API
-      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      if (Platform.OS === 'web') {
+        // @ts-ignore - Web Audio API
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
     } catch (error) {
       console.error("Error setting audio mode:", error);
     }
@@ -123,33 +130,43 @@ export default function IndexRoute() {
 
   const playSound = async (isAccent: boolean) => {
     try {
-      if (!audioContextRef.current) {
-        console.log('No audio context available');
-        return;
+      if (Platform.OS === 'web') {
+        // Web Audio API for web platform
+        if (!audioContextRef.current) {
+          console.log('No audio context available');
+          return;
+        }
+
+        const ctx = audioContextRef.current;
+
+        // Resume context if suspended (required by some browsers)
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+
+        const frequency = isAccent ? 1200 : 800;
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        oscillator.frequency.value = frequency;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.05);
+      } else {
+        // Use expo-audio players for native platforms
+        const player = isAccent ? accentPlayer : clickPlayer;
+        if (player) {
+          player.seekTo(0);
+          player.play();
+        }
       }
-
-      const ctx = audioContextRef.current;
-
-      // Resume context if suspended (required by some browsers)
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-
-      const frequency = isAccent ? 1200 : 800;
-      const oscillator = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(ctx.destination);
-
-      oscillator.frequency.value = frequency;
-      oscillator.type = 'sine';
-
-      gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-
-      oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + 0.05);
     } catch (error) {
       console.error("Error playing sound:", error);
     }
@@ -160,8 +177,8 @@ export default function IndexRoute() {
       setCurrentBeat(-1);
       setIsPlaying(false);
     } else {
-      // Initialize audio context on first user interaction
-      if (!audioContextRef.current) {
+      // Initialize audio context on first user interaction (web only)
+      if (Platform.OS === 'web' && !audioContextRef.current) {
         // @ts-ignore - Web Audio API
         audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       }
