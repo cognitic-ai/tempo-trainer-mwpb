@@ -386,30 +386,83 @@ export default function IndexRoute() {
           </Text>
         </Pressable>
 
-        {/* Time Signature */}
-        <Pressable
-          onPress={() => setShowTimeSignature(true)}
-          style={({ pressed }) => ({
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
-            borderRadius: 10,
-            borderCurve: "continuous",
-            width: "100%",
-          })}
-        >
-          <Text style={{
-            fontSize: 18,
-            fontWeight: "600",
-            color: textColor
-          }}>
-            Time Signature: {timeSignature.top}/{timeSignature.bottom}
-          </Text>
-          <Text style={{ fontSize: 18, color: textColor }}>▶</Text>
-        </Pressable>
+        {/* Time Signature and Subdivision */}
+        <View style={{ flexDirection: "row", gap: 12, width: "100%" }}>
+          {/* Time Signature */}
+          <Pressable
+            onPress={() => setShowTimeSignature(true)}
+            style={({ pressed }) => ({
+              flex: 1,
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
+              borderRadius: 10,
+              borderCurve: "continuous",
+            })}
+          >
+            <Text style={{
+              fontSize: 14,
+              fontWeight: "500",
+              color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
+              marginBottom: 4,
+            }}>
+              Time Signature
+            </Text>
+            <Text style={{
+              fontSize: 20,
+              fontWeight: "700",
+              color: textColor
+            }}>
+              {timeSignature.top}/{timeSignature.bottom}
+            </Text>
+          </Pressable>
+
+          {/* Subdivision */}
+          <Pressable
+            onPress={() => setShowSubdivision(true)}
+            style={({ pressed }) => ({
+              flex: 1,
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingVertical: 16,
+              paddingHorizontal: 12,
+              backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
+              borderRadius: 10,
+              borderCurve: "continuous",
+            })}
+          >
+            <Text style={{
+              fontSize: 14,
+              fontWeight: "500",
+              color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
+              marginBottom: 4,
+            }}>
+              Subdivision
+            </Text>
+            <Text style={{
+              fontSize: 20,
+              fontWeight: "700",
+              color: textColor
+            }}>
+              {(() => {
+                const notationMap: Record<Subdivision, string> = {
+                  whole: "1/1",
+                  half: "1/2",
+                  quarter: "1/4",
+                  eighth: "1/8",
+                  sixteenth: "1/16",
+                  "eighth-sixteenth-sixteenth": "1/8 - 1/16 - 1/16",
+                  "sixteenth-sixteenth-eighth": "1/16 - 1/16 - 1/8"
+                };
+                return notationMap[subdivision];
+              })()}
+            </Text>
+          </Pressable>
+        </View>
 
         <Modal
           visible={showTimeSignature}
@@ -508,42 +561,6 @@ export default function IndexRoute() {
             </View>
           </Pressable>
         </Modal>
-
-        {/* Subdivision */}
-        <Pressable
-          onPress={() => setShowSubdivision(true)}
-          style={({ pressed }) => ({
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
-            borderRadius: 10,
-            borderCurve: "continuous",
-            width: "100%",
-          })}
-        >
-          <Text style={{
-            fontSize: 18,
-            fontWeight: "600",
-            color: textColor
-          }}>
-            Subdivision: {(() => {
-              const notationMap: Record<Subdivision, string> = {
-                whole: "1/1",
-                half: "1/2",
-                quarter: "1/4",
-                eighth: "1/8",
-                sixteenth: "1/16",
-                "eighth-sixteenth-sixteenth": "1/8 - 1/16 - 1/16",
-                "sixteenth-sixteenth-eighth": "1/16 - 1/16 - 1/8"
-              };
-              return notationMap[subdivision];
-            })()}
-          </Text>
-          <Text style={{ fontSize: 18, color: textColor }}>▶</Text>
-        </Pressable>
 
         <Modal
           visible={showSubdivision}
