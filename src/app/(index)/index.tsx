@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, Platform } from "react-native";
+import { View, Text, Pressable, ScrollView, Platform, Modal } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { useAudioPlayer } from "expo-audio";
 import * as AC from "@bacons/apple-colors";
@@ -387,146 +387,89 @@ export default function IndexRoute() {
         </Pressable>
 
         {/* Time Signature */}
-        <View style={{ gap: 12, width: "100%" }}>
-          <Pressable
-            onPress={() => setShowTimeSignature(!showTimeSignature)}
-            style={({ pressed }) => ({
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingVertical: 12,
-              paddingHorizontal: 16,
-              backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
-              borderRadius: 10,
-              borderCurve: "continuous",
-            })}
-          >
-            <Text style={{
-              fontSize: 18,
-              fontWeight: "600",
-              color: textColor
-            }}>
-              Time Signature: {timeSignature.top}/{timeSignature.bottom}
-            </Text>
-            <Text style={{ fontSize: 18, color: textColor }}>
-              {showTimeSignature ? "▼" : "▶"}
-            </Text>
-          </Pressable>
-          {showTimeSignature && (
-            <View style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 8
-            }}>
-              {TIME_SIGNATURES.map((sig) => (
-                <Pressable
-                  key={`${sig.top}/${sig.bottom}`}
-                  onPress={() => {
-                    setTimeSignature(sig);
-                    setAccents(new Set([0]));
-                    setCurrentBeat(-1);
-                    setShowTimeSignature(false);
-                  }}
-                  style={({ pressed }) => ({
-                    backgroundColor:
-                      sig.top === timeSignature.top && sig.bottom === timeSignature.bottom
-                        ? AC.systemBlue as any
-                        : pressed
-                          ? AC.systemGray5 as any
-                          : AC.systemGray6 as any,
-                    paddingHorizontal: 20,
-                    paddingVertical: 12,
-                    borderRadius: 10,
-                    borderCurve: "continuous",
-                  })}
-                >
-                  <Text style={{
-                    fontSize: 16,
-                    fontWeight: "600",
-                    color: sig.top === timeSignature.top && sig.bottom === timeSignature.bottom
-                      ? "white"
-                      : textColor
-                  }}>
-                    {sig.top}/{sig.bottom}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          )}
-        </View>
+        <Pressable
+          onPress={() => setShowTimeSignature(true)}
+          style={({ pressed }) => ({
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+            backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
+            borderRadius: 10,
+            borderCurve: "continuous",
+            width: "100%",
+          })}
+        >
+          <Text style={{
+            fontSize: 18,
+            fontWeight: "600",
+            color: textColor
+          }}>
+            Time Signature: {timeSignature.top}/{timeSignature.bottom}
+          </Text>
+          <Text style={{ fontSize: 18, color: textColor }}>▶</Text>
+        </Pressable>
 
-        {/* Subdivision */}
-        <View style={{ gap: 12, width: "100%" }}>
+        <Modal
+          visible={showTimeSignature}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowTimeSignature(false)}
+        >
           <Pressable
-            onPress={() => setShowSubdivision(!showSubdivision)}
-            style={({ pressed }) => ({
-              flexDirection: "row",
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              justifyContent: "center",
               alignItems: "center",
-              justifyContent: "space-between",
-              paddingVertical: 12,
-              paddingHorizontal: 16,
-              backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
-              borderRadius: 10,
-              borderCurve: "continuous",
-            })}
+            }}
+            onPress={() => setShowTimeSignature(false)}
           >
-            <Text style={{
-              fontSize: 18,
-              fontWeight: "600",
-              color: textColor
-            }}>
-              Subdivision: {(() => {
-                const notationMap: Record<Subdivision, string> = {
-                  whole: "1/1",
-                  half: "1/2",
-                  quarter: "1/4",
-                  eighth: "1/8",
-                  sixteenth: "1/16",
-                  "eighth-sixteenth-sixteenth": "1/8 - 1/16 - 1/16",
-                  "sixteenth-sixteenth-eighth": "1/16 - 1/16 - 1/8"
-                };
-                return notationMap[subdivision];
-              })()}
-            </Text>
-            <Text style={{ fontSize: 18, color: textColor }}>
-              {showSubdivision ? "▼" : "▶"}
-            </Text>
-          </Pressable>
-          {showSubdivision && (
-            <View style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 8
-            }}>
-              {SUBDIVISIONS.map((sub) => {
-                const notationMap: Record<Subdivision, string> = {
-                  whole: "1/1",
-                  half: "1/2",
-                  quarter: "1/4",
-                  eighth: "1/8",
-                  sixteenth: "1/16",
-                  "eighth-sixteenth-sixteenth": "1/8 - 1/16 - 1/16",
-                  "sixteenth-sixteenth-eighth": "1/16 - 1/16 - 1/8"
-                };
-
-                return (
+            <View
+              style={{
+                backgroundColor: isDarkMode ? "#1c1c1e" : "white",
+                borderRadius: 20,
+                padding: 24,
+                width: "80%",
+                maxWidth: 400,
+                gap: 16,
+              }}
+              onStartShouldSetResponder={() => true}
+            >
+              <Text style={{
+                fontSize: 24,
+                fontWeight: "700",
+                color: textColor,
+                textAlign: "center",
+                marginBottom: 8,
+              }}>
+                Time Signature
+              </Text>
+              <View style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 8,
+                justifyContent: "center",
+              }}>
+                {TIME_SIGNATURES.map((sig) => (
                   <Pressable
-                    key={sub}
+                    key={`${sig.top}/${sig.bottom}`}
                     onPress={() => {
-                      setSubdivision(sub);
+                      setTimeSignature(sig);
                       setAccents(new Set([0]));
                       setCurrentBeat(-1);
-                      setShowSubdivision(false);
+                      setShowTimeSignature(false);
                     }}
                     style={({ pressed }) => ({
                       backgroundColor:
-                        sub === subdivision
+                        sig.top === timeSignature.top && sig.bottom === timeSignature.bottom
                           ? AC.systemBlue as any
                           : pressed
                             ? AC.systemGray5 as any
                             : AC.systemGray6 as any,
-                      paddingHorizontal: 20,
-                      paddingVertical: 12,
+                      paddingHorizontal: 24,
+                      paddingVertical: 16,
                       borderRadius: 10,
                       borderCurve: "continuous",
                     })}
@@ -534,16 +477,181 @@ export default function IndexRoute() {
                     <Text style={{
                       fontSize: 18,
                       fontWeight: "600",
-                      color: sub === subdivision ? "white" : textColor
+                      color: sig.top === timeSignature.top && sig.bottom === timeSignature.bottom
+                        ? "white"
+                        : textColor
                     }}>
-                      {notationMap[sub]}
+                      {sig.top}/{sig.bottom}
                     </Text>
                   </Pressable>
-                );
-              })}
+                ))}
+              </View>
+              <Pressable
+                onPress={() => setShowTimeSignature(false)}
+                style={({ pressed }) => ({
+                  backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
+                  paddingVertical: 12,
+                  borderRadius: 10,
+                  borderCurve: "continuous",
+                  marginTop: 8,
+                })}
+              >
+                <Text style={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  color: textColor,
+                  textAlign: "center",
+                }}>
+                  Cancel
+                </Text>
+              </Pressable>
             </View>
-          )}
-        </View>
+          </Pressable>
+        </Modal>
+
+        {/* Subdivision */}
+        <Pressable
+          onPress={() => setShowSubdivision(true)}
+          style={({ pressed }) => ({
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+            backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
+            borderRadius: 10,
+            borderCurve: "continuous",
+            width: "100%",
+          })}
+        >
+          <Text style={{
+            fontSize: 18,
+            fontWeight: "600",
+            color: textColor
+          }}>
+            Subdivision: {(() => {
+              const notationMap: Record<Subdivision, string> = {
+                whole: "1/1",
+                half: "1/2",
+                quarter: "1/4",
+                eighth: "1/8",
+                sixteenth: "1/16",
+                "eighth-sixteenth-sixteenth": "1/8 - 1/16 - 1/16",
+                "sixteenth-sixteenth-eighth": "1/16 - 1/16 - 1/8"
+              };
+              return notationMap[subdivision];
+            })()}
+          </Text>
+          <Text style={{ fontSize: 18, color: textColor }}>▶</Text>
+        </Pressable>
+
+        <Modal
+          visible={showSubdivision}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowSubdivision(false)}
+        >
+          <Pressable
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => setShowSubdivision(false)}
+          >
+            <View
+              style={{
+                backgroundColor: isDarkMode ? "#1c1c1e" : "white",
+                borderRadius: 20,
+                padding: 24,
+                width: "80%",
+                maxWidth: 400,
+                gap: 16,
+              }}
+              onStartShouldSetResponder={() => true}
+            >
+              <Text style={{
+                fontSize: 24,
+                fontWeight: "700",
+                color: textColor,
+                textAlign: "center",
+                marginBottom: 8,
+              }}>
+                Subdivision
+              </Text>
+              <View style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 8,
+                justifyContent: "center",
+              }}>
+                {SUBDIVISIONS.map((sub) => {
+                  const notationMap: Record<Subdivision, string> = {
+                    whole: "1/1",
+                    half: "1/2",
+                    quarter: "1/4",
+                    eighth: "1/8",
+                    sixteenth: "1/16",
+                    "eighth-sixteenth-sixteenth": "1/8 - 1/16 - 1/16",
+                    "sixteenth-sixteenth-eighth": "1/16 - 1/16 - 1/8"
+                  };
+
+                  return (
+                    <Pressable
+                      key={sub}
+                      onPress={() => {
+                        setSubdivision(sub);
+                        setAccents(new Set([0]));
+                        setCurrentBeat(-1);
+                        setShowSubdivision(false);
+                      }}
+                      style={({ pressed }) => ({
+                        backgroundColor:
+                          sub === subdivision
+                            ? AC.systemBlue as any
+                            : pressed
+                              ? AC.systemGray5 as any
+                              : AC.systemGray6 as any,
+                        paddingHorizontal: 20,
+                        paddingVertical: 16,
+                        borderRadius: 10,
+                        borderCurve: "continuous",
+                      })}
+                    >
+                      <Text style={{
+                        fontSize: 18,
+                        fontWeight: "600",
+                        color: sub === subdivision ? "white" : textColor
+                      }}>
+                        {notationMap[sub]}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              <Pressable
+                onPress={() => setShowSubdivision(false)}
+                style={({ pressed }) => ({
+                  backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
+                  paddingVertical: 12,
+                  borderRadius: 10,
+                  borderCurve: "continuous",
+                  marginTop: 8,
+                })}
+              >
+                <Text style={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  color: textColor,
+                  textAlign: "center",
+                }}>
+                  Cancel
+                </Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Modal>
       </View>
     </ScrollView>
   );
