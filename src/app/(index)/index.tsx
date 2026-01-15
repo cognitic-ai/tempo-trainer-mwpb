@@ -182,9 +182,9 @@ export default function IndexRoute() {
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: "black" }}
     >
-      <View style={{ padding: 20, gap: 32, alignItems: "center" }}>
+      <View style={{ padding: 20, gap: 32, alignItems: "center", backgroundColor: "black" }}>
         <Text style={{
           fontSize: 32,
           fontWeight: "700",
