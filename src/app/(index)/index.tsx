@@ -1,6 +1,5 @@
-import { View, Text, Pressable, ScrollView, Platform } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { useState, useEffect, useRef } from "react";
-import { useAudioPlayer, AudioSource } from "expo-audio";
 import * as AC from "@bacons/apple-colors";
 import Slider from "@react-native-community/slider";
 
