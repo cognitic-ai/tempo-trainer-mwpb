@@ -5,7 +5,7 @@ import * as AC from "@bacons/apple-colors";
 import Slider from "@react-native-community/slider";
 
 type TimeSignature = { top: number; bottom: number };
-type Subdivision = "whole" | "half" | "quarter" | "eighth" | "sixteenth";
+type Subdivision = "whole" | "half" | "quarter" | "eighth" | "sixteenth" | "eighth-sixteenth-sixteenth" | "sixteenth-sixteenth-eighth";
 
 const TIME_SIGNATURES: TimeSignature[] = [
   { top: 2, bottom: 4 },
@@ -18,7 +18,15 @@ const TIME_SIGNATURES: TimeSignature[] = [
   { top: 12, bottom: 8 },
 ];
 
-const SUBDIVISIONS: Subdivision[] = ["whole", "half", "quarter", "eighth", "sixteenth"];
+const SUBDIVISIONS: Subdivision[] = [
+  "whole",
+  "half",
+  "quarter",
+  "eighth",
+  "sixteenth",
+  "eighth-sixteenth-sixteenth",
+  "sixteenth-sixteenth-eighth"
+];
 
 const getSubdivisionMultiplier = (subdivision: Subdivision): number => {
   switch (subdivision) {
@@ -27,7 +35,26 @@ const getSubdivisionMultiplier = (subdivision: Subdivision): number => {
     case "quarter": return 4;
     case "eighth": return 8;
     case "sixteenth": return 16;
+    case "eighth-sixteenth-sixteenth": return 16;
+    case "sixteenth-sixteenth-eighth": return 16;
   }
+};
+
+const getSubdivisionPattern = (subdivision: Subdivision, beatIndex: number, totalBeats: number): boolean => {
+  // Returns true if this beat should be played based on the subdivision pattern
+  if (subdivision === "eighth-sixteenth-sixteenth") {
+    // Pattern: eighth (2 sixteenths), sixteenth, sixteenth per quarter note
+    // Within each group of 4 sixteenths: play beats 0, 2, 3
+    const posInGroup = beatIndex % 4;
+    return posInGroup === 0 || posInGroup === 2 || posInGroup === 3;
+  } else if (subdivision === "sixteenth-sixteenth-eighth") {
+    // Pattern: sixteenth, sixteenth, eighth (2 sixteenths) per quarter note
+    // Within each group of 4 sixteenths: play beats 0, 1, 2
+    const posInGroup = beatIndex % 4;
+    return posInGroup === 0 || posInGroup === 1 || posInGroup === 2;
+  }
+  // For regular subdivisions, play all beats
+  return true;
 };
 
 export default function IndexRoute() {
@@ -64,7 +91,10 @@ export default function IndexRoute() {
       intervalRef.current = setInterval(() => {
         setCurrentBeat((prevBeat) => {
           const nextBeat = (prevBeat + 1) % totalSubdivisions;
-          playSound(accents.has(nextBeat));
+          // Only play sound if this beat is part of the subdivision pattern
+          if (getSubdivisionPattern(subdivision, nextBeat, totalSubdivisions)) {
+            playSound(accents.has(nextBeat));
+          }
           return nextBeat;
         });
       }, intervalMs);
@@ -165,7 +195,10 @@ export default function IndexRoute() {
       }
 
       setCurrentBeat(0);
-      playSound(accents.has(0));
+      // Only play sound if this beat is part of the subdivision pattern
+      if (getSubdivisionPattern(subdivision, 0, totalSubdivisions)) {
+        playSound(accents.has(0));
+      }
       setIsPlaying(true);
     }
   };
@@ -265,44 +298,52 @@ export default function IndexRoute() {
             gap: 8,
             justifyContent: "center"
           }}>
-            {Array.from({ length: totalSubdivisions }, (_, i) => (
-              <Pressable
-                key={i}
-                onPress={() => toggleAccent(i)}
-                style={({ pressed }) => {
-                  const isActive = currentBeat === i;
-                  const isAccented = accents.has(i);
+            {Array.from({ length: totalSubdivisions }, (_, i) => {
+              const isPlayedBeat = getSubdivisionPattern(subdivision, i, totalSubdivisions);
 
-                  return {
-                    width: 44,
-                    height: 44,
-                    borderRadius: 22,
-                    backgroundColor:
-                      isActive && isAccented
-                        ? AC.systemRed as any
-                        : isActive
-                          ? AC.systemBlue as any
-                          : isAccented
-                            ? AC.systemOrange as any
-                            : pressed
-                              ? AC.systemGray5 as any
-                              : AC.systemGray6 as any,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderWidth: isAccented ? 3 : 0,
-                    borderColor: AC.systemOrange as any,
-                  };
-                }}
-              >
-                <Text style={{
-                  fontSize: 14,
-                  fontWeight: "700",
-                  color: currentBeat === i ? "white" : textColor
-                }}>
-                  {i + 1}
-                </Text>
-              </Pressable>
-            ))}
+              return (
+                <Pressable
+                  key={i}
+                  onPress={() => toggleAccent(i)}
+                  disabled={!isPlayedBeat}
+                  style={({ pressed }) => {
+                    const isActive = currentBeat === i;
+                    const isAccented = accents.has(i);
+
+                    return {
+                      width: 44,
+                      height: 44,
+                      borderRadius: 22,
+                      backgroundColor:
+                        !isPlayedBeat
+                          ? AC.systemGray6 as any
+                          : isActive && isAccented
+                            ? AC.systemRed as any
+                            : isActive
+                              ? AC.systemBlue as any
+                              : isAccented
+                                ? AC.systemOrange as any
+                                : pressed
+                                  ? AC.systemGray5 as any
+                                  : AC.systemGray6 as any,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderWidth: isAccented && isPlayedBeat ? 3 : 0,
+                      borderColor: AC.systemOrange as any,
+                      opacity: isPlayedBeat ? 1 : 0.3,
+                    };
+                  }}
+                >
+                  <Text style={{
+                    fontSize: 14,
+                    fontWeight: "700",
+                    color: currentBeat === i ? "white" : textColor
+                  }}>
+                    {i + 1}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
           <View style={{
             flexDirection: "row",
@@ -420,7 +461,9 @@ export default function IndexRoute() {
                 half: "1/2",
                 quarter: "1/4",
                 eighth: "1/8",
-                sixteenth: "1/16"
+                sixteenth: "1/16",
+                "eighth-sixteenth-sixteenth": "♪𝅘𝅥𝅯𝅘𝅥𝅯",
+                "sixteenth-sixteenth-eighth": "𝅘𝅥𝅯𝅘𝅥𝅯♪"
               };
 
               return (
