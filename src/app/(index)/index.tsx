@@ -334,18 +334,61 @@ export default function IndexRoute() {
 
         {/* BPM Control */}
         <View style={{ alignItems: "center", gap: 16, width: "100%", paddingHorizontal: 20 }}>
-          <Pressable onPress={() => {
-            setBpmInputValue(bpm.toString());
-            setShowBpmInput(true);
-          }}>
-            <Text style={{
-              fontSize: 72,
-              fontWeight: "700",
-              color: AC.systemBlue as any
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+            <Pressable
+              onPress={() => setBpm(prev => Math.max(20, prev - 1))}
+              style={({ pressed }) => ({
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
+                justifyContent: "center",
+                alignItems: "center",
+              })}
+            >
+              <Text style={{
+                fontSize: 32,
+                fontWeight: "600",
+                color: textColor
+              }}>
+                −
+              </Text>
+            </Pressable>
+
+            <Pressable onPress={() => {
+              setBpmInputValue(bpm.toString());
+              setShowBpmInput(true);
             }}>
-              {bpm}
-            </Text>
-          </Pressable>
+              <Text style={{
+                fontSize: 72,
+                fontWeight: "700",
+                color: AC.systemBlue as any
+              }}>
+                {bpm}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => setBpm(prev => Math.min(300, prev + 1))}
+              style={({ pressed }) => ({
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
+                justifyContent: "center",
+                alignItems: "center",
+              })}
+            >
+              <Text style={{
+                fontSize: 32,
+                fontWeight: "600",
+                color: textColor
+              }}>
+                +
+              </Text>
+            </Pressable>
+          </View>
+
           <Text style={{
             fontSize: 16,
             color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
