@@ -222,7 +222,7 @@ export default function IndexRoute() {
             fontWeight: "700",
             color: textColor
           }}>
-            Metronome
+            Beat Em Up
           </Text>
           <Pressable
             onPress={() => setIsDarkMode(!isDarkMode)}

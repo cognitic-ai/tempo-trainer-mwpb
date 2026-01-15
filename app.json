@@ -1,5 +1,7 @@
 {
   "expo": {
+    "name": "Beat Em Up",
+    "slug": "beat-em-up",
     "orientation": "default",
     "scheme": "acme",
     "userInterfaceStyle": "automatic",
