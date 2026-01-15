@@ -105,7 +105,7 @@ export default function IndexRoute() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [intervalMs, isPlaying, totalSubdivisions, accents]);
+  }, [intervalMs, isPlaying, totalSubdivisions, subdivision, accents]);
 
   const loadSounds = async () => {
     try {
