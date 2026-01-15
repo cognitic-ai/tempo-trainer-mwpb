@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "orientation": "default",
+    "scheme": "acme",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "experiments": {
+      "reactCompiler": true
+    }
+  }
+}
