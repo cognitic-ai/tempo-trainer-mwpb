@@ -10,6 +10,9 @@
     },
     "experiments": {
       "reactCompiler": true
-    }
+    },
+    "plugins": [
+      "expo-audio"
+    ]
   }
 }
