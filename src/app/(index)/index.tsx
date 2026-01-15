@@ -445,7 +445,7 @@ export default function IndexRoute() {
               style={{
                 width: subdivision.includes('-') ? 40 : 30,
                 height: 30,
-                tintColor: textColor
+                tintColor: isDarkMode ? "#E8E8E8" : "#2C2C2C"
               }}
               contentFit="contain"
             />
@@ -655,7 +655,7 @@ export default function IndexRoute() {
                         style={{
                           width: sub.includes('-') ? 50 : 35,
                           height: 35,
-                          tintColor: sub === subdivision ? "white" : textColor
+                          tintColor: sub === subdivision ? "white" : (isDarkMode ? "#E8E8E8" : "#2C2C2C")
                         }}
                         contentFit="contain"
                       />
