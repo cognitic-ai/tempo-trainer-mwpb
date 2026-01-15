@@ -229,6 +229,70 @@ export default function IndexRoute() {
           </View>
         </View>
 
+        {/* Visual Beat Indicators */}
+        <View style={{ gap: 12, width: "100%" }}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: "600",
+            color: AC.label as any
+          }}>
+            Beats (Tap to Accent)
+          </Text>
+          <View style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 8,
+            justifyContent: "center"
+          }}>
+            {Array.from({ length: totalSubdivisions }, (_, i) => (
+              <Pressable
+                key={i}
+                onPress={() => toggleAccent(i)}
+                style={({ pressed }) => {
+                  const isActive = currentBeat === i;
+                  const isAccented = accents.has(i);
+
+                  return {
+                    width: 44,
+                    height: 44,
+                    borderRadius: 22,
+                    backgroundColor:
+                      isActive && isAccented
+                        ? AC.systemRed as any
+                        : isActive
+                          ? AC.systemBlue as any
+                          : isAccented
+                            ? AC.systemOrange as any
+                            : pressed
+                              ? AC.systemGray5 as any
+                              : AC.systemGray6 as any,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderWidth: isAccented ? 3 : 0,
+                    borderColor: AC.systemOrange as any,
+                  };
+                }}
+              >
+                <Text style={{
+                  fontSize: 14,
+                  fontWeight: "700",
+                  color: currentBeat === i ? "white" : AC.label as any
+                }}>
+                  {i + 1}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          <Text style={{
+            fontSize: 14,
+            color: AC.secondaryLabel as any,
+            textAlign: "center",
+            marginTop: 8
+          }}>
+            Orange border = Accented beat
+          </Text>
+        </View>
+
         {/* Play/Pause Button */}
         <Pressable
           onPress={togglePlay}
@@ -346,70 +410,6 @@ export default function IndexRoute() {
               </Pressable>
             ))}
           </View>
-        </View>
-
-        {/* Visual Beat Indicators */}
-        <View style={{ gap: 12, width: "100%" }}>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: "600",
-            color: AC.label as any
-          }}>
-            Beats (Tap to Accent)
-          </Text>
-          <View style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: 8,
-            justifyContent: "center"
-          }}>
-            {Array.from({ length: totalSubdivisions }, (_, i) => (
-              <Pressable
-                key={i}
-                onPress={() => toggleAccent(i)}
-                style={({ pressed }) => {
-                  const isActive = currentBeat === i;
-                  const isAccented = accents.has(i);
-
-                  return {
-                    width: 44,
-                    height: 44,
-                    borderRadius: 22,
-                    backgroundColor:
-                      isActive && isAccented
-                        ? AC.systemRed as any
-                        : isActive
-                          ? AC.systemBlue as any
-                          : isAccented
-                            ? AC.systemOrange as any
-                            : pressed
-                              ? AC.systemGray5 as any
-                              : AC.systemGray6 as any,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderWidth: isAccented ? 3 : 0,
-                    borderColor: AC.systemOrange as any,
-                  };
-                }}
-              >
-                <Text style={{
-                  fontSize: 14,
-                  fontWeight: "700",
-                  color: currentBeat === i ? "white" : AC.label as any
-                }}>
-                  {i + 1}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-          <Text style={{
-            fontSize: 14,
-            color: AC.secondaryLabel as any,
-            textAlign: "center",
-            marginTop: 8
-          }}>
-            Orange border = Accented beat
-          </Text>
         </View>
       </View>
     </ScrollView>
