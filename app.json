@@ -12,7 +12,8 @@
       "reactCompiler": true
     },
     "plugins": [
-      "expo-audio"
+      "expo-audio",
+      "@bacons/apple-colors"
     ]
   }
 }

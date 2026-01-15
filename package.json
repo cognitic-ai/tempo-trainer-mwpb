@@ -6,6 +6,7 @@
     "start": "expo start"
   },
   "dependencies": {
+    "@bacons/apple-colors": "^0.0.8",
     "@expo/vector-icons": "^15.0.3",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/native": "^7.1.8",
