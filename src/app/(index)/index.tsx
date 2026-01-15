@@ -379,36 +379,46 @@ export default function IndexRoute() {
             flexWrap: "wrap",
             gap: 8
           }}>
-            {SUBDIVISIONS.map((sub) => (
-              <Pressable
-                key={sub}
-                onPress={() => {
-                  setSubdivision(sub);
-                  setAccents(new Set([0]));
-                  setCurrentBeat(-1);
-                }}
-                style={({ pressed }) => ({
-                  backgroundColor:
-                    sub === subdivision
-                      ? AC.systemBlue as any
-                      : pressed
-                        ? AC.systemGray5 as any
-                        : AC.systemGray6 as any,
-                  paddingHorizontal: 20,
-                  paddingVertical: 12,
-                  borderRadius: 10,
-                  borderCurve: "continuous",
-                })}
-              >
-                <Text style={{
-                  fontSize: 16,
-                  fontWeight: "600",
-                  color: sub === subdivision ? "white" : AC.label as any
-                }}>
-                  {sub.charAt(0).toUpperCase() + sub.slice(1)}
-                </Text>
-              </Pressable>
-            ))}
+            {SUBDIVISIONS.map((sub) => {
+              const notationMap: Record<Subdivision, string> = {
+                whole: "𝅝",
+                half: "𝅗𝅥",
+                quarter: "♩",
+                eighth: "♪",
+                sixteenth: "𝅘𝅥𝅯"
+              };
+
+              return (
+                <Pressable
+                  key={sub}
+                  onPress={() => {
+                    setSubdivision(sub);
+                    setAccents(new Set([0]));
+                    setCurrentBeat(-1);
+                  }}
+                  style={({ pressed }) => ({
+                    backgroundColor:
+                      sub === subdivision
+                        ? AC.systemBlue as any
+                        : pressed
+                          ? AC.systemGray5 as any
+                          : AC.systemGray6 as any,
+                    paddingHorizontal: 20,
+                    paddingVertical: 12,
+                    borderRadius: 10,
+                    borderCurve: "continuous",
+                  })}
+                >
+                  <Text style={{
+                    fontSize: 32,
+                    fontWeight: "400",
+                    color: sub === subdivision ? "white" : AC.label as any
+                  }}>
+                    {notationMap[sub]}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
       </View>
