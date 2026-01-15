@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, Platform, Modal } from "react-native";
+import { View, Text, Pressable, ScrollView, Platform, Modal, TextInput } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { useAudioPlayer } from "expo-audio";
 import * as AC from "@bacons/apple-colors";
@@ -67,6 +67,8 @@ export default function IndexRoute() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showTimeSignature, setShowTimeSignature] = useState(false);
   const [showSubdivision, setShowSubdivision] = useState(false);
+  const [showBpmInput, setShowBpmInput] = useState(false);
+  const [bpmInputValue, setBpmInputValue] = useState("");
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -330,13 +332,18 @@ export default function IndexRoute() {
 
         {/* BPM Control */}
         <View style={{ alignItems: "center", gap: 16, width: "100%", paddingHorizontal: 20 }}>
-          <Text style={{
-            fontSize: 72,
-            fontWeight: "700",
-            color: AC.systemBlue as any
+          <Pressable onPress={() => {
+            setBpmInputValue(bpm.toString());
+            setShowBpmInput(true);
           }}>
-            {bpm}
-          </Text>
+            <Text style={{
+              fontSize: 72,
+              fontWeight: "700",
+              color: AC.systemBlue as any
+            }}>
+              {bpm}
+            </Text>
+          </Pressable>
           <Text style={{
             fontSize: 16,
             color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
@@ -666,6 +673,111 @@ export default function IndexRoute() {
                   Cancel
                 </Text>
               </Pressable>
+            </View>
+          </Pressable>
+        </Modal>
+
+        <Modal
+          visible={showBpmInput}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowBpmInput(false)}
+        >
+          <Pressable
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => setShowBpmInput(false)}
+          >
+            <View
+              style={{
+                backgroundColor: isDarkMode ? "#1c1c1e" : "white",
+                borderRadius: 20,
+                padding: 24,
+                width: "80%",
+                maxWidth: 400,
+                gap: 16,
+              }}
+              onStartShouldSetResponder={() => true}
+            >
+              <Text style={{
+                fontSize: 24,
+                fontWeight: "700",
+                color: textColor,
+                textAlign: "center",
+                marginBottom: 8,
+              }}>
+                Set BPM
+              </Text>
+              <TextInput
+                value={bpmInputValue}
+                onChangeText={setBpmInputValue}
+                keyboardType="number-pad"
+                autoFocus
+                selectTextOnFocus
+                style={{
+                  fontSize: 48,
+                  fontWeight: "700",
+                  color: textColor,
+                  backgroundColor: isDarkMode ? AC.systemGray6 as any : AC.systemGray5 as any,
+                  paddingVertical: 16,
+                  paddingHorizontal: 24,
+                  borderRadius: 12,
+                  textAlign: "center",
+                }}
+                placeholder={bpm.toString()}
+                placeholderTextColor={isDarkMode ? AC.systemGray as any : AC.systemGray2 as any}
+              />
+              <View style={{ flexDirection: "row", gap: 12 }}>
+                <Pressable
+                  onPress={() => setShowBpmInput(false)}
+                  style={({ pressed }) => ({
+                    flex: 1,
+                    backgroundColor: pressed ? AC.systemGray5 as any : AC.systemGray6 as any,
+                    paddingVertical: 12,
+                    borderRadius: 10,
+                    borderCurve: "continuous",
+                  })}
+                >
+                  <Text style={{
+                    fontSize: 16,
+                    fontWeight: "600",
+                    color: textColor,
+                    textAlign: "center",
+                  }}>
+                    Cancel
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    const newBpm = parseInt(bpmInputValue);
+                    if (!isNaN(newBpm) && newBpm >= 20 && newBpm <= 300) {
+                      setBpm(newBpm);
+                      setShowBpmInput(false);
+                    }
+                  }}
+                  style={({ pressed }) => ({
+                    flex: 1,
+                    backgroundColor: pressed ? AC.systemBlue as any : AC.systemBlue as any,
+                    paddingVertical: 12,
+                    borderRadius: 10,
+                    borderCurve: "continuous",
+                    opacity: pressed ? 0.8 : 1,
+                  })}
+                >
+                  <Text style={{
+                    fontSize: 16,
+                    fontWeight: "600",
+                    color: "white",
+                    textAlign: "center",
+                  }}>
+                    Set
+                  </Text>
+                </Pressable>
+              </View>
             </View>
           </Pressable>
         </Modal>
