@@ -381,11 +381,11 @@ export default function IndexRoute() {
           }}>
             {SUBDIVISIONS.map((sub) => {
               const notationMap: Record<Subdivision, string> = {
-                whole: "𝅝",
-                half: "𝅗𝅥",
-                quarter: "𝅘𝅥",
-                eighth: "𝅘𝅥𝅮",
-                sixteenth: "𝅘𝅥𝅯"
+                whole: "1/1",
+                half: "1/2",
+                quarter: "1/4",
+                eighth: "1/8",
+                sixteenth: "1/16"
               };
 
               return (
@@ -410,8 +410,8 @@ export default function IndexRoute() {
                   })}
                 >
                   <Text style={{
-                    fontSize: 32,
-                    fontWeight: "400",
+                    fontSize: 18,
+                    fontWeight: "600",
                     color: sub === subdivision ? "white" : AC.label as any
                   }}>
                     {notationMap[sub]}
