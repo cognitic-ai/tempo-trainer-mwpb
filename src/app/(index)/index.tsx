@@ -239,41 +239,6 @@ export default function IndexRoute() {
           </Pressable>
         </View>
 
-        {/* BPM Control */}
-        <View style={{ alignItems: "center", gap: 16, width: "100%", paddingHorizontal: 20 }}>
-          <Text style={{
-            fontSize: 72,
-            fontWeight: "700",
-            color: AC.systemBlue as any
-          }}>
-            {bpm}
-          </Text>
-          <Text style={{
-            fontSize: 16,
-            color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
-            fontWeight: "600"
-          }}>
-            BPM
-          </Text>
-
-          <Slider
-            style={{ width: "100%", height: 40 }}
-            minimumValue={20}
-            maximumValue={300}
-            step={1}
-            value={bpm}
-            onValueChange={setBpm}
-            minimumTrackTintColor={AC.systemBlue as any}
-            maximumTrackTintColor={AC.systemGray5 as any}
-            thumbTintColor={AC.systemBlue as any}
-          />
-
-          <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
-            <Text style={{ fontSize: 14, color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any }}>20</Text>
-            <Text style={{ fontSize: 14, color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any }}>300</Text>
-          </View>
-        </View>
-
         {/* Visual Beat Indicators */}
         <View style={{ gap: 12, width: "100%" }}>
           <Text style={{
@@ -363,28 +328,40 @@ export default function IndexRoute() {
           </View>
         </View>
 
-        {/* Play/Pause Button */}
-        <Pressable
-          onPress={togglePlay}
-          style={({ pressed }) => ({
-            backgroundColor: pressed ? AC.systemBlue as any : AC.systemBlue as any,
-            paddingHorizontal: 48,
-            paddingVertical: 20,
-            borderRadius: 16,
-            borderCurve: "continuous",
-            minWidth: 200,
-            opacity: pressed ? 0.8 : 1,
-          })}
-        >
+        {/* BPM Control */}
+        <View style={{ alignItems: "center", gap: 16, width: "100%", paddingHorizontal: 20 }}>
           <Text style={{
-            fontSize: 24,
+            fontSize: 72,
             fontWeight: "700",
-            color: "white",
-            textAlign: "center"
+            color: AC.systemBlue as any
           }}>
-            {isPlaying ? "Stop" : "Start"}
+            {bpm}
           </Text>
-        </Pressable>
+          <Text style={{
+            fontSize: 16,
+            color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any,
+            fontWeight: "600"
+          }}>
+            BPM
+          </Text>
+
+          <Slider
+            style={{ width: "100%", height: 40 }}
+            minimumValue={20}
+            maximumValue={300}
+            step={1}
+            value={bpm}
+            onValueChange={setBpm}
+            minimumTrackTintColor={AC.systemBlue as any}
+            maximumTrackTintColor={AC.systemGray5 as any}
+            thumbTintColor={AC.systemBlue as any}
+          />
+
+          <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
+            <Text style={{ fontSize: 14, color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any }}>20</Text>
+            <Text style={{ fontSize: 14, color: isDarkMode ? AC.secondaryLabel as any : AC.systemGray as any }}>300</Text>
+          </View>
+        </View>
 
         {/* Time Signature and Subdivision */}
         <View style={{ flexDirection: "row", gap: 12, width: "100%" }}>
@@ -463,6 +440,29 @@ export default function IndexRoute() {
             </Text>
           </Pressable>
         </View>
+
+        {/* Play/Pause Button */}
+        <Pressable
+          onPress={togglePlay}
+          style={({ pressed }) => ({
+            backgroundColor: pressed ? AC.systemBlue as any : AC.systemBlue as any,
+            paddingHorizontal: 48,
+            paddingVertical: 20,
+            borderRadius: 16,
+            borderCurve: "continuous",
+            minWidth: 200,
+            opacity: pressed ? 0.8 : 1,
+          })}
+        >
+          <Text style={{
+            fontSize: 24,
+            fontWeight: "700",
+            color: "white",
+            textAlign: "center"
+          }}>
+            {isPlaying ? "Stop" : "Start"}
+          </Text>
+        </Pressable>
 
         <Modal
           visible={showTimeSignature}
