@@ -383,8 +383,8 @@ export default function IndexRoute() {
               const notationMap: Record<Subdivision, string> = {
                 whole: "𝅝",
                 half: "𝅗𝅥",
-                quarter: "♩",
-                eighth: "♪",
+                quarter: "𝅘𝅥",
+                eighth: "𝅘𝅥𝅮",
                 sixteenth: "𝅘𝅥𝅯"
               };
 
