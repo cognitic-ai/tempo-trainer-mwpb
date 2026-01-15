@@ -429,19 +429,19 @@ export default function IndexRoute() {
               Subdivision
             </Text>
             <Text style={{
-              fontSize: 20,
-              fontWeight: "700",
+              fontSize: 24,
+              fontWeight: "400",
               color: textColor
             }}>
               {(() => {
                 const notationMap: Record<Subdivision, string> = {
-                  whole: "1/1",
-                  half: "1/2",
-                  quarter: "1/4",
-                  eighth: "1/8",
-                  sixteenth: "1/16",
-                  "eighth-sixteenth-sixteenth": "1/8 - 1/16 - 1/16",
-                  "sixteenth-sixteenth-eighth": "1/16 - 1/16 - 1/8"
+                  whole: "○",
+                  half: "𝅗𝅥",
+                  quarter: "♩",
+                  eighth: "♪",
+                  sixteenth: "♬",
+                  "eighth-sixteenth-sixteenth": "♪♬",
+                  "sixteenth-sixteenth-eighth": "♬♪"
                 };
                 return notationMap[subdivision];
               })()}
@@ -613,13 +613,13 @@ export default function IndexRoute() {
               }}>
                 {SUBDIVISIONS.map((sub) => {
                   const notationMap: Record<Subdivision, string> = {
-                    whole: "1/1",
-                    half: "1/2",
-                    quarter: "1/4",
-                    eighth: "1/8",
-                    sixteenth: "1/16",
-                    "eighth-sixteenth-sixteenth": "1/8 - 1/16 - 1/16",
-                    "sixteenth-sixteenth-eighth": "1/16 - 1/16 - 1/8"
+                    whole: "○",
+                    half: "𝅗𝅥",
+                    quarter: "♩",
+                    eighth: "♪",
+                    sixteenth: "♬",
+                    "eighth-sixteenth-sixteenth": "♪♬",
+                    "sixteenth-sixteenth-eighth": "♬♪"
                   };
 
                   return (
@@ -638,15 +638,15 @@ export default function IndexRoute() {
                             : pressed
                               ? AC.systemGray5 as any
                               : AC.systemGray6 as any,
-                        paddingHorizontal: 20,
+                        paddingHorizontal: 24,
                         paddingVertical: 16,
                         borderRadius: 10,
                         borderCurve: "continuous",
                       })}
                     >
                       <Text style={{
-                        fontSize: 18,
-                        fontWeight: "600",
+                        fontSize: 28,
+                        fontWeight: "400",
                         color: sub === subdivision ? "white" : textColor
                       }}>
                         {notationMap[sub]}
